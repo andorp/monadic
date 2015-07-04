@@ -1,5 +1,9 @@
+from monadic.decorator import monadic
 from monadic.monad_def import monad_law_one, monad_law_two, monad_law_three
-from monadic.monad.error import error_monad, Left, Right
+from monadic.monad.error import error_monad, Left, Right, error_msg
+
+
+from nose.tools import eq_
 
 
 test_data = [
@@ -9,16 +13,40 @@ test_data = [
 ]
 
 
+test_monad = error_monad()
+
+
 def test_monad_law_one():
     for xs in test_data:
-        yield monad_law_one, error_monad, xs
+        yield monad_law_one, test_monad, xs
 
 
 def test_monad_law_two():
     for xs in test_data:
-        yield monad_law_two, error_monad, xs
+        yield monad_law_two, test_monad, xs
 
 
 def test_monad_law_three():
     for xs in test_data:
-        yield monad_law_three, error_monad, xs
+        yield monad_law_three, test_monad, xs
+
+
+def div_error(x, y):
+    if y == 0:
+         return error_msg("Divisor was zero")
+    else:
+         return Right(x / y)
+
+
+@monadic(error_monad)
+def decorated_error():
+    x = 4
+    y = div_error(16, x)
+    z = div_error(y, 1)
+    return z
+
+
+def test_decorated_error():
+    xs = decorated_error()
+    expected = Right(4)
+    eq_(expected, xs, "Right value is not calculated directly")

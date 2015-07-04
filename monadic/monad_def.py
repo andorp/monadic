@@ -15,6 +15,12 @@ def flat_map(monad):
     return fm
 
 
+def unit(monad):
+    def u(x):
+        return (monad['1'])(x)
+    return u
+
+
 def monad_law_one(monad, a):
     F = monad['t']
     mu = monad['*']
@@ -44,3 +50,11 @@ def monad_law_three(monad, a):
         raise Exception("Monad law 3 is broken {lhs} = {rhs}".format(lhs=lhs, rhs=rhs))
 
 
+class Monad(object):
+    def __init__(self, monad_t, value):
+        self.bind = flat_map(monad_t)
+        self.value = value
+
+    def __call__(self, k):
+        self.value = bind(self.value, k)
+        return self.value

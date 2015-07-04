@@ -18,5 +18,6 @@ def join(xss):
     return result
 
 
-list_monad = monad(list_functor, join, unit)
+def list_monad():
+    return monad(list_functor, join, unit)
 

@@ -1,3 +1,4 @@
+astdump==4.2
 wsgiref==0.1.2
 
 # Test dependencies

@@ -64,5 +64,5 @@ def join(mmx):
         return check_type(mmx.value)
 
 
-maybe_monad = monad(maybe_functor, join, Just)
-
+def maybe_monad():
+    return monad(maybe_functor, join, Just)

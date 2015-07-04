@@ -55,4 +55,9 @@ def join(e):
         return check_type(e.right)
 
 
-error_monad = monad(error_functor, join, Right)
+def error_msg(msg):
+    return Left(msg)
+
+
+def error_monad():
+    return monad(error_functor, join, Right)
