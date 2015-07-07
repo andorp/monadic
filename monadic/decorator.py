@@ -22,6 +22,17 @@ class NoSource(Error):
     pass
 
 
+def func_code(f):
+    code = getattr(f, 'func_code')
+    if code:
+        return code
+    code = getattr(f, '__code__')
+    if code:
+        return code
+    else:
+        raise Exception('Expected a function')
+
+
 def uncompile(c):
     """ uncompile(codeobj) -> [source, filename, mode, flags, firstlineno, privateprefix] """
     if c.co_flags & inspect.CO_NESTED or c.co_freevars:
@@ -107,7 +118,7 @@ def monadic_comp(monad):
 
     def wrapper(func):
         # uncompile function
-        unc = uncompile(func.func_code)
+        unc = uncompile(func_code(func))
 
         # convert to ast and apply visitor
         tree = parse_snippet(*unc)
@@ -131,7 +142,7 @@ def monadic(monad):
 
     def wrapper(func):
         # uncompile function
-        unc = uncompile(func.func_code)
+        unc = uncompile(func_code(func))
 
         # convert to ast and apply visitor
         tree = parse_snippet(*unc)
