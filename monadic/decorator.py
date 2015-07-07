@@ -253,7 +253,7 @@ def get_name(stmt):
     return aer_algebra(get_assign_name, get_expr_name, class_error('name'), stmt)
 
 
-value_expressions = [ast.BoolOp, ast.BinOp, ast.UnaryOp, ast.Dict, ast.Set, ast.ListComp, ast.SetComp,
+value_expressions = [ast.BoolOp, ast.BinOp, ast.UnaryOp, ast.Dict, ast.ListComp,
                      ast.DictComp, ast.Num, ast.Str, ast.Subscript, ast.List, ast.Tuple]
 
 
