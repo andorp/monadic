@@ -3,7 +3,6 @@ http://code.activestate.com/recipes/578353-code-to-source-and-back/
 """
 
 import ast, inspect, re
-import astdump
 from types import CodeType as code, FunctionType as function
 import inspect
 
