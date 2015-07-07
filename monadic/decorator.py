@@ -254,7 +254,7 @@ def get_name(stmt):
 
 
 value_expressions = [ast.BoolOp, ast.BinOp, ast.UnaryOp, ast.Dict, ast.ListComp,
-                     ast.DictComp, ast.Num, ast.Str, ast.Subscript, ast.List, ast.Tuple]
+                     ast.Num, ast.Str, ast.Subscript, ast.List, ast.Tuple]
 
 
 def is_value_expr(expr):
