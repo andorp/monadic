@@ -1,1 +1,2 @@
-Simple monad implementation in python
+Simple monad implementation
+===========================
