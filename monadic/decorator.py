@@ -23,12 +23,10 @@ class NoSource(Error):
 
 
 def func_code(f):
-    code = getattr(f, 'func_code')
-    if code:
-        return code
-    code = getattr(f, '__code__')
-    if code:
-        return code
+    if hasattr(f, 'func_code'):
+        return getattr(f, 'func_code')
+    if hasattr(f, '__code__'):
+        return getattr(f, '__code__')
     else:
         raise Exception('Expected a function')
 
