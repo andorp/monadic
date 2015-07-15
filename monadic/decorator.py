@@ -6,6 +6,9 @@ import ast, inspect, re
 from types import CodeType as code, FunctionType as function
 import inspect
 
+from monadic.interop import map_list
+from monadic.python_ver import PYTHON_VERSION
+
 import __future__
 PyCF_MASK = sum(v for k, v in vars(__future__).items() if k.startswith('CO_FUTURE'))
 
@@ -23,12 +26,12 @@ class NoSource(Error):
 
 
 def func_code(f):
-    if hasattr(f, 'func_code'):
+    if PYTHON_VERSION is 2:
         return getattr(f, 'func_code')
-    if hasattr(f, '__code__'):
+    elif PYTHON_VERSION is 3:
         return getattr(f, '__code__')
     else:
-        raise Exception('Expected a function')
+        raise Exception('Unknown python version {v}'.format(v=PYTHON_VERSION))
 
 
 def uncompile(c):
@@ -194,12 +197,12 @@ class MonadicFunctionDef(ast.NodeTransformer):
 
         ## from contract import any_t, flat_map
         import_contract = ast.ImportFrom(module="monadic.monad_def",
-                                         names=map(alias, ["flat_map", "unit"]))
+                                         names=map_list(alias, ["flat_map", "unit"]))
         ast.fix_missing_locations(import_contract)
 
         ## from monad_module import monad_name
         import_monad = ast.ImportFrom(module=self.module_name,
-                                         names=map(alias, [self.monad_name]))
+                                         names=map_list(alias, [self.monad_name]))
         ast.fix_missing_locations(import_monad)
 
         ## bind = flat_map(monad_name(any_t))
