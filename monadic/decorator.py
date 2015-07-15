@@ -243,6 +243,9 @@ class MonadicStatement(ast.NodeTransformer):
                 call = get_call(s)
                 la = ast.Lambda(args=ast.arguments(args=[get_name(s)], defaults=[]),
                                 body=create_bind(stmts[1:]))
+#                TODO: Python 3
+#                la = ast.Lambda(args=ast.arguments(args=[ast.arg(arg=get_name(s).id)], defaults=[], kwonlyargs=[], kw_defaults=[]),
+#                                                   body=create_bind(stmts[1:]))
                 return func_call(name('bind'), [call, la])
             raise Exception('Empty statement for list comprehension')
         call = create_bind(node.body)
