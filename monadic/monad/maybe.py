@@ -15,7 +15,7 @@ class Just(Maybe):
         self.value = value
 
     def __str__(self):
-        return "(Just {x})".format(x=str(self.x))
+        return "(Just {value})".format(value=str(self.value))
 
 
 class Nothing(Maybe):
