@@ -36,7 +36,7 @@ def monad_law_two(monad, a):
     eta = monad['1']
     lhs = mu(eta(a))
     rhs = a
-    if mu(eta(a)) != a:
+    if lhs != rhs:
         raise Exception("Monad law two is broken {lhs} = {rhs}".format(lhs=lhs, rhs=rhs))
 
 
