@@ -25,11 +25,20 @@ class NoSource(Error):
     pass
 
 
-def func_code(f):
+def get_func_code(f):
     if PYTHON_VERSION is 2:
-        return getattr(f, 'func_code')
+        return f.func_code
     elif PYTHON_VERSION is 3:
-        return getattr(f, '__code__')
+        return f.__code__
+    else:
+        raise Exception('Unknown python version {v}'.format(v=PYTHON_VERSION))
+
+
+def set_func_code(f, code):
+    if PYTHON_VERSION is 2:
+        f.func_code = code
+    elif PYTHON_VERSION is 3:
+        f.__code__ = code
     else:
         raise Exception('Unknown python version {v}'.format(v=PYTHON_VERSION))
 
@@ -143,7 +152,7 @@ def monadic(monad):
 
     def wrapper(func):
         # uncompile function
-        unc = uncompile(func_code(func))
+        unc = uncompile(get_func_code(func))
 
         # convert to ast and apply visitor
         tree = parse_snippet(*unc)
@@ -153,7 +162,7 @@ def monadic(monad):
         unc[0] = tree
 
         # recompile and patch function's code
-        func.func_code = recompile(*unc)
+        set_func_code(func, recompile(*unc))
         return func
 
     return wrapper
@@ -241,11 +250,7 @@ class MonadicStatement(ast.NodeTransformer):
                 return final_call(s)
             if l > 1:
                 call = get_call(s)
-                la = ast.Lambda(args=ast.arguments(args=[get_name(s)], defaults=[]),
-                                body=create_bind(stmts[1:]))
-#                TODO: Python 3
-#                la = ast.Lambda(args=ast.arguments(args=[ast.arg(arg=get_name(s).id)], defaults=[], kwonlyargs=[], kw_defaults=[]),
-#                                                   body=create_bind(stmts[1:]))
+                la = ast_lambda(get_name(s), create_bind(stmts[1:]))
                 return func_call(name('bind'), [call, la])
             raise Exception('Empty statement for list comprehension')
         call = create_bind(node.body)
@@ -254,6 +259,7 @@ class MonadicStatement(ast.NodeTransformer):
         ast.fix_missing_locations(newnode)
         node.body=[newnode]
         return node
+
 
 # Helpers for assign, expr, return ast handlers
 
@@ -349,6 +355,15 @@ def alias(name):
 
 def at(name, str_idx):
     return ast.Subscript(value=name, slice=ast.Index(str_idx), ctx=ast.Load())
+
+
+def ast_lambda(name, body):
+    if PYTHON_VERSION is 2:
+        return ast.Lambda(args=ast.arguments(args=[name], defaults=[]), body=body)
+    elif PYTHON_VERSION is 3:
+        return ast.Lambda(args=ast.arguments(args=[ast.arg(arg=name.id)], defaults=[], kwonlyargs=[], kw_defaults=[]), body=body)
+    else:
+        raise Exception('Unknown python version {v}'.format(v=PYTHON_VERSION))
 
 
 __all__ = [monadic, monadic_comp]
