@@ -1,8 +1,6 @@
 # monadic
 Simple monadic framework for python
 
-## Build Status
-
 [![Build Status](https://travis-ci.org/andorp/monadic.svg?branch=master)](https://travis-ci.org/andorp/monadic)
 
 ## virtualenvwrapper
