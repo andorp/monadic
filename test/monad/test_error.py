@@ -1,4 +1,4 @@
-from monadic.decorator import monadic
+from monadic.decorator import monadic, monadic_comp
 from monadic.monad_def import monad_law_one, monad_law_two, monad_law_three
 from monadic.monad.error import error_monad, Left, Right, error_msg
 
@@ -49,4 +49,18 @@ def decorated_error():
 def test_decorated_error():
     xs = decorated_error()
     expected = Right(4)
-    eq_(expected, xs, "Right value is not calculated directly")
+    eq_(expected, xs, "Right value is not calculated correctly")
+
+
+@monadic_comp(error_monad)
+def comprehension_error():
+    x = [ z for y in div_error(16, 4)
+            for z in div_error(y, 1)
+        ]
+    return x
+
+
+def test_comprehension():
+    xs = comprehension_error()
+    expected = Right(4)
+    eq_(expected, xs, "Right value is  not calculated correctly")

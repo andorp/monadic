@@ -1,4 +1,4 @@
-from monadic.decorator import monadic
+from monadic.decorator import monadic, monadic_comp
 from monadic.monad_def import monad_law_one, monad_law_two, monad_law_three
 from monadic.monad.maybe import maybe_monad, nothing, just
 
@@ -46,5 +46,19 @@ def decorated_maybe():
 
 def test_decorated_maybe():
     xs = decorated_maybe()
+    expected = just(2)
+    eq_(expected, xs, "Maybe value is not calculated correctly")
+
+
+@monadic_comp(maybe_monad)
+def comprehension_maybe():
+    x = [ y for x in div_maybe(4, 2)
+            for y in div_maybe(4, x)
+        ]
+    return x
+
+
+def test_maybe_comprehension():
+    xs = comprehension_maybe()
     expected = just(2)
     eq_(expected, xs, "Maybe value is not calculated correctly")

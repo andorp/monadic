@@ -13,6 +13,9 @@ import __future__
 PyCF_MASK = sum(v for k, v in vars(__future__).items() if k.startswith('CO_FUTURE'))
 
 
+__all__ = ['monadic', 'monadic_comp']
+
+
 class Error(Exception):
     pass
 
@@ -128,7 +131,7 @@ def monadic_comp(monad):
 
     def wrapper(func):
         # uncompile function
-        unc = uncompile(func_code(func))
+        unc = uncompile(get_func_code(func))
 
         # convert to ast and apply visitor
         tree = parse_snippet(*unc)
@@ -138,7 +141,7 @@ def monadic_comp(monad):
         unc[0] = tree
 
         # recompile and patch function's code
-        func.func_code = recompile(*unc)
+        set_func_code(func, recompile(*unc))
         return func
 
     return wrapper
@@ -179,7 +182,7 @@ class MonadicListComp(ast.NodeTransformer):
             iter_call = g.iter
             if l == 1:
                 la = ast.Lambda(args=ast.arguments(args=[g.target], defaults=[]),
-                                body=func_call(name('unit'), args=[node.elt])) # ast.Str(s="TODO")) # TODO
+                                body=func_call(name('unit'), args=[node.elt]))
                 return func_call(name('bind'), [iter_call, la])
             if l > 1:
                 la = ast.Lambda(args=ast.arguments(args=[g.target], defaults=[]),
@@ -211,7 +214,7 @@ class MonadicFunctionDef(ast.NodeTransformer):
 
         ## from monad_module import monad_name
         import_monad = ast.ImportFrom(module=self.module_name,
-                                         names=map_list(alias, [self.monad_name]))
+                                      names=map_list(alias, [self.monad_name]))
         ast.fix_missing_locations(import_monad)
 
         ## bind = flat_map(monad_name(any_t))
@@ -366,4 +369,3 @@ def ast_lambda(name, body):
         raise Exception('Unknown python version {v}'.format(v=PYTHON_VERSION))
 
 
-__all__ = [monadic, monadic_comp]
