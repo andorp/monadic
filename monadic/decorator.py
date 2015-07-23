@@ -207,9 +207,9 @@ class MonadicFunctionDef(ast.NodeTransformer):
     def visit_FunctionDef(self, node):
         monad_any_t = func_call(name(self.monad_name), [])
 
-        ## from contract import any_t, flat_map
+        ## from contract import any_t, kliesli_arrow
         import_contract = ast.ImportFrom(module="monadic.monad_def",
-                                         names=map_list(alias, ["flat_map", "unit"]))
+                                         names=map_list(alias, ["kliesli_arrow", "unit"]))
         ast.fix_missing_locations(import_contract)
 
         ## from monad_module import monad_name
@@ -217,10 +217,10 @@ class MonadicFunctionDef(ast.NodeTransformer):
                                       names=map_list(alias, [self.monad_name]))
         ast.fix_missing_locations(import_monad)
 
-        ## bind = flat_map(monad_name(any_t))
+        ## bind = kliesli_arrow(monad_name(any_t))
         bind = ast.Assign(
             [name_store('bind')],
-            func_call(name('flat_map'), [monad_any_t])
+            func_call(name('kliesli_arrow'), [monad_any_t])
         )
         ast.fix_missing_locations(bind)
 

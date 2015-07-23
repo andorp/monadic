@@ -8,7 +8,7 @@ def monad(functor, times, ident):
     }
 
 
-def flat_map(monad):
+def kliesli_arrow(monad):
     def fm(m, k):
         F = monad['t']
         return monad['*'](F(k)(m))
@@ -52,7 +52,7 @@ def monad_law_three(monad, a):
 
 class Monad(object):
     def __init__(self, monad_t, value):
-        self.bind = flat_map(monad_t)
+        self.bind = kliesli_arrow(monad_t)
         self.value = value
 
     def __call__(self, k):
