@@ -47,6 +47,10 @@ def error_functor(f):
     return fmap
 
 
+def unit(x):
+    return Right(x)
+
+
 def join(e):
     check_type(e)
     if isLeft(e):
@@ -60,4 +64,4 @@ def error_msg(msg):
 
 
 def error_monad():
-    return monad(error_functor, join, Right)
+    return monad(error_functor, join, unit)

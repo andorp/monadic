@@ -64,5 +64,8 @@ def join(mmx):
         return check_type(mmx.value)
 
 
+def unit(x):
+    return Just(x)
+
 def maybe_monad():
-    return monad(maybe_functor, join, Just)
+    return monad(maybe_functor, join, unit)
