@@ -1,0 +1,8 @@
+#!/bin/sh
+
+export WORKON_HOME=~/.virtualenvs
+mkdir -p $WORKON_HOME
+source /usr/local/bin/virtualenvwrapper.sh
+mkvirtualenv --python=python2.7 monadic-python2
+pip install -r requirements.txt
+bash
