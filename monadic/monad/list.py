@@ -20,4 +20,3 @@ def join(xss):
 
 def list_monad():
     return monad(list_functor, join, unit)
-

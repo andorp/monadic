@@ -8,7 +8,7 @@ from nose.tools import eq_
 test_data = [
     [[[]]],
     [[[1]]],
-    [[[1,2],[1]],[[1],[2,3]]]
+    [[[1, 2], [1]], [[1], [2, 3]]]
 ]
 
 
@@ -45,9 +45,9 @@ def test_decorated_list():
 
 @monadic_comp(list_monad)
 def comprehension_list():
-    x = [ y for x in range(0, 4)
-            for y in range(0, x)
-        ]
+    x = [y
+         for x in range(0, 4)
+         for y in range(0, x)]
     return x
 
 

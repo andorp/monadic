@@ -33,9 +33,9 @@ def test_monad_law_three():
 
 def div_error(x, y):
     if y == 0:
-         return error_msg("Divisor was zero")
+        return error_msg("Divisor was zero")
     else:
-         return Right(x / y)
+        return Right(x / y)
 
 
 @monadic(error_monad)
@@ -54,9 +54,9 @@ def test_decorated_error():
 
 @monadic_comp(error_monad)
 def comprehension_error():
-    x = [ z for y in div_error(16, 4)
-            for z in div_error(y, 1)
-        ]
+    x = [z
+         for y in div_error(16, 4)
+         for z in div_error(y, 1)]
     return x
 
 

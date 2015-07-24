@@ -30,11 +30,12 @@ def test_monad_law_three():
     for xs in test_data:
         yield monad_law_three, test_monad, xs
 
+
 def div_maybe(x, y):
     if y == 0:
-         return nothing
+        return nothing
     else:
-         return just(x / y)
+        return just(x / y)
 
 
 @monadic(maybe_monad)
@@ -52,9 +53,9 @@ def test_decorated_maybe():
 
 @monadic_comp(maybe_monad)
 def comprehension_maybe():
-    x = [ y for x in div_maybe(4, 2)
-            for y in div_maybe(4, x)
-        ]
+    x = [y
+         for x in div_maybe(4, 2)
+         for y in div_maybe(4, x)]
     return x
 
 

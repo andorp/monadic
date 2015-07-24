@@ -2,7 +2,9 @@
 http://code.activestate.com/recipes/578353-code-to-source-and-back/
 """
 
-import ast, inspect, re
+import ast
+import inspect
+import re
 from types import CodeType as code, FunctionType as function
 import inspect
 
@@ -10,7 +12,9 @@ from monadic.interop import map_list
 from monadic.python_ver import PYTHON_VERSION
 
 import __future__
-PyCF_MASK = sum(v for k, v in vars(__future__).items() if k.startswith('CO_FUTURE'))
+PyCF_MASK = sum(v
+                for k, v in vars(__future__).items()
+                if k.startswith('CO_FUTURE'))
 
 
 __all__ = ['monadic', 'monadic_comp']
@@ -47,7 +51,8 @@ def set_func_code(f, code):
 
 
 def uncompile(c):
-    """ uncompile(codeobj) -> [source, filename, mode, flags, firstlineno, privateprefix] """
+    """ uncompile(codeobj)
+        -> [source, filename, mode, flags, firstlineno, privateprefix] """
     if c.co_flags & inspect.CO_NESTED or c.co_freevars:
         raise Unsupported('nested functions not supported')
     if c.co_name == '<lambda>':
@@ -70,11 +75,14 @@ def uncompile(c):
             privateprefix = m.group(1)
             break
 
-    return [source, filename, 'exec', c.co_flags & PyCF_MASK, firstlineno, privateprefix]
+    return [source, filename, 'exec', c.co_flags & PyCF_MASK,
+            firstlineno, privateprefix]
 
 
-def recompile(source, filename, mode, flags=0, firstlineno=1, privateprefix=None):
-    """ recompile output of uncompile back to a code object. source may also be preparsed AST """
+def recompile(source, filename, mode,
+              flags=0, firstlineno=1, privateprefix=None):
+    """ recompile output of uncompile back to a code object.
+        source may also be preparsed AST """
     if isinstance(source, ast.AST):
         a = source
     else:
@@ -85,7 +93,8 @@ def recompile(source, filename, mode, flags=0, firstlineno=1, privateprefix=None
 
     c0 = compile(a, filename, mode, flags, True)
 
-    # This code object defines the function. Find the function's actual body code:
+    # This code object defines the function.
+    # Find the function's actual body code:
     for c in c0.co_consts:
         if not isinstance(c, code):
             continue
@@ -99,16 +108,21 @@ def recompile(source, filename, mode, flags=0, firstlineno=1, privateprefix=None
 
         def fixnames(names):
             isprivate = re.compile('^__.*(?<!__)$').match
-            return tuple(privateprefix + name if isprivate(name) else name for name in names)
+            return tuple(privateprefix + name if isprivate(name)
+                         else name for name in names)
 
-        c = code(c.co_argcount, c.co_nlocals, c.co_stacksize, c.co_flags, c.co_code, c.co_consts,
-                fixnames(c.co_names), fixnames(c.co_varnames), c.co_filename, c.co_name,
-                c.co_firstlineno, c.co_lnotab, c.co_freevars, c.co_cellvars)
+        c = code(c.co_argcount, c.co_nlocals, c.co_stacksize,
+                 c.co_flags, c.co_code, c.co_consts,
+                 fixnames(c.co_names), fixnames(c.co_varnames),
+                 c.co_filename, c.co_name, c.co_firstlineno,
+                 c.co_lnotab, c.co_freevars, c.co_cellvars)
     return c
 
 
-def parse_snippet(source, filename, mode, flags, firstlineno, privateprefix_ignored=None):
-    """ Like ast.parse, but accepts indented code snippet with a line number offset. """
+def parse_snippet(source, filename, mode,
+                  flags, firstlineno, privateprefix_ignored=None):
+    """ Like ast.parse, but accepts indented
+        code snippet with a line number offset. """
     args = filename, mode, flags | ast.PyCF_ONLY_AST, True
     prefix = '\n'
     try:
@@ -124,8 +138,8 @@ def parse_snippet(source, filename, mode, flags, firstlineno, privateprefix_igno
 
 
 def monadic_comp(monad):
-    """ Decorator that creates helper functions within the function body and transforms
-        all the list comprehension into a monadic expression """
+    """ Decorator that creates helper functions within the function body
+        and transforms all the list comprehension into a monadic expression """
     module_name = inspect.getmodule(monad).__name__
     monad_name = monad.__name__
 
@@ -148,8 +162,8 @@ def monadic_comp(monad):
 
 
 def monadic(monad):
-    """ Decorator that creates helper functions within the function body and transforms
-        it into a monadic expression """
+    """ Decorator that creates helper functions within the function body
+        and transforms it into a monadic expression """
     module_name = inspect.getmodule(monad).__name__
     monad_name = monad.__name__
 
@@ -181,11 +195,13 @@ class MonadicListComp(ast.NodeTransformer):
             g = gs[0]
             iter_call = g.iter
             if l == 1:
-                la = ast.Lambda(args=ast.arguments(args=[g.target], defaults=[]),
+                la = ast.Lambda(args=ast.arguments(args=[g.target],
+                                                   defaults=[]),
                                 body=func_call(name('unit'), args=[node.elt]))
                 return func_call(name('bind'), [iter_call, la])
             if l > 1:
-                la = ast.Lambda(args=ast.arguments(args=[g.target], defaults=[]),
+                la = ast.Lambda(args=ast.arguments(args=[g.target],
+                                                   defaults=[]),
                                 body=create_bind(gs[1:]))
                 return func_call(name('bind'), [iter_call, la])
             raise Exception('Empty generators for list comprehension')
@@ -198,7 +214,8 @@ class MonadicListComp(ast.NodeTransformer):
 
 
 class MonadicFunctionDef(ast.NodeTransformer):
-    """ Import and declare the necessary functions to create monad abstractions """
+    """ Import and declare the necessary functions
+        to create monad abstractions """
 
     def __init__(self, module_name, monad_name):
         self.module_name = module_name
@@ -207,38 +224,40 @@ class MonadicFunctionDef(ast.NodeTransformer):
     def visit_FunctionDef(self, node):
         monad_any_t = func_call(name(self.monad_name), [])
 
-        ## from contract import any_t, kliesli_arrow
-        import_contract = ast.ImportFrom(module="monadic.monad_def",
-                                         names=map_list(alias, ["kliesli_arrow", "unit"]))
+        # from contract import any_t, kliesli_arrow
+        import_contract = ast.ImportFrom(
+            module="monadic.monad_def",
+            names=map_list(alias, ["kliesli_arrow", "unit"]))
         ast.fix_missing_locations(import_contract)
 
-        ## from monad_module import monad_name
+        # from monad_module import monad_name
         import_monad = ast.ImportFrom(module=self.module_name,
                                       names=map_list(alias, [self.monad_name]))
         ast.fix_missing_locations(import_monad)
 
-        ## bind = kliesli_arrow(monad_name(any_t))
+        # bind = kliesli_arrow(monad_name(any_t))
         bind = ast.Assign(
             [name_store('bind')],
             func_call(name('kliesli_arrow'), [monad_any_t])
         )
         ast.fix_missing_locations(bind)
 
-        ## unit = unit(monad_name(any_t))
+        # unit = unit(monad_name(any_t))
         unit = ast.Assign(
             [name_store('unit')],
             func_call(name('unit'), [monad_any_t])
         )
         ast.fix_missing_locations(unit)
 
-        ## non_monadic = unit
+        # non_monadic = unit
         normal = ast.Assign(
             [name_store('normal')],
             name('unit')
         )
         ast.fix_missing_locations(normal)
 
-        node.body = [import_contract, import_monad, bind, unit, normal] + node.body
+        node.body = [import_contract, import_monad,
+                     bind, unit, normal] + node.body
         return node
 
 
@@ -260,7 +279,7 @@ class MonadicStatement(ast.NodeTransformer):
         newnode = ast.Return(call)
         ast.copy_location(newnode, node)
         ast.fix_missing_locations(newnode)
-        node.body=[newnode]
+        node.body = [newnode]
         return node
 
 
@@ -268,17 +287,25 @@ class MonadicStatement(ast.NodeTransformer):
 
 
 def get_name(stmt):
+
     def get_assign_name(a):
-        a.targets[0].cxt=ast.Load()
+        a.targets[0].cxt = ast.Load()
         return a.targets[0]
+
     def get_expr_name(e):
         return name('_')
+
     # Algebra is like inversion of control
-    return aer_algebra(get_assign_name, get_expr_name, class_error('name'), stmt)
+    return aer_algebra(
+        get_assign_name,
+        get_expr_name,
+        class_error('name'),
+        stmt)
 
 
-value_expressions = [ast.BoolOp, ast.BinOp, ast.UnaryOp, ast.Dict, ast.ListComp,
-                     ast.Num, ast.Str, ast.Subscript, ast.List, ast.Tuple]
+value_expressions = [ast.BoolOp, ast.BinOp, ast.UnaryOp, ast.Dict,
+                     ast.ListComp, ast.Num, ast.Str, ast.Subscript,
+                     ast.List, ast.Tuple]
 
 
 def is_value_expr(expr):
@@ -304,24 +331,37 @@ def get_expr_call(e):
 
 
 def get_call(stmt):
-    return aer_algebra(get_assign_call, get_expr_call, class_error('call'), stmt)
+    return aer_algebra(
+        get_assign_call,
+        get_expr_call,
+        class_error('call'),
+        stmt)
 
 
 def get_return_expr(stmt):
     def get_expr(r):
         return r.value
-    return aer_algebra(class_error('return'), class_error('return'), get_expr, stmt)
+    return aer_algebra(
+        class_error('return'),
+        class_error('return'),
+        get_expr,
+        stmt)
 
 
 def final_call(stmt):
     def return_call(s):
         return func_call(name('unit'), args=[get_return_expr(s)])
-    return aer_algebra(get_assign_call, get_expr_call, return_call, stmt)
+    return aer_algebra(
+        get_assign_call,
+        get_expr_call,
+        return_call,
+        stmt)
 
 
 def class_error(e):
     def check(s):
-        raise Exception("Non {expected} type {t}".format(expected=e, t=s.__class__))
+        raise Exception("Non {expected} type {t}".format(
+            expected=e, t=s.__class__))
     return check
 
 
@@ -362,10 +402,14 @@ def at(name, str_idx):
 
 def ast_lambda(name, body):
     if PYTHON_VERSION is 2:
-        return ast.Lambda(args=ast.arguments(args=[name], defaults=[]), body=body)
+        return ast.Lambda(args=ast.arguments(args=[name],
+                          defaults=[]), body=body)
     elif PYTHON_VERSION is 3:
-        return ast.Lambda(args=ast.arguments(args=[ast.arg(arg=name.id)], defaults=[], kwonlyargs=[], kw_defaults=[]), body=body)
+        return ast.Lambda(args=ast.arguments(args=[ast.arg(arg=name.id)],
+                                             defaults=[],
+                                             kwonlyargs=[],
+                                             kw_defaults=[]),
+                          body=body)
     else:
-        raise Exception('Unknown python version {v}'.format(v=PYTHON_VERSION))
-
-
+        raise Exception('Unknown python version {v}'.format(
+            v=PYTHON_VERSION))

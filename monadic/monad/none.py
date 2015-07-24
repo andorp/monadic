@@ -7,9 +7,9 @@ __all__ = ['none_monad']
 def none_functor(f):
     def fmap(x):
         if x is None:
-             return x
+            return x
         else:
-             return f(x)
+            return f(x)
     return fmap
 
 

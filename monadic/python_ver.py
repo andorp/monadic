@@ -12,4 +12,3 @@ def get_major_version():
 
 
 PYTHON_VERSION = get_major_version()
-

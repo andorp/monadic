@@ -3,8 +3,8 @@ from monadic.monad_def import monad
 
 class Either(object):
     def __eq__(self, other):
-        return (isinstance(other, self.__class__)
-            and self.__dict__ == other.__dict__)
+        return (isinstance(other, self.__class__) and
+                self.__dict__ == other.__dict__)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -30,7 +30,8 @@ def check_type(x):
     if x.__class__ in [Left, Right]:
         return x
     else:
-        raise TypeError("Expected either type, found {v}:{t}".format(v=x, t=x.__class__))
+        raise TypeError("Expected either type, found {v}:{t}".format(
+            v=x, t=x.__class__))
 
 
 def isLeft(x):

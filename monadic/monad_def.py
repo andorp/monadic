@@ -28,7 +28,8 @@ def monad_law_one(monad, a):
     lhs = mu(F(mu)(a))
     rhs = mu(mu(a))
     if lhs != rhs:
-       raise Exception("Monad law one is broken {lhs} = {rhs}".format(lhs=lhs, rhs=rhs))
+        raise Exception("Monad law one is broken {lhs} = {rhs}".format(
+            lhs=lhs, rhs=rhs))
 
 
 def monad_law_two(monad, a):
@@ -37,7 +38,8 @@ def monad_law_two(monad, a):
     lhs = mu(eta(a))
     rhs = a
     if lhs != rhs:
-        raise Exception("Monad law two is broken {lhs} = {rhs}".format(lhs=lhs, rhs=rhs))
+        raise Exception("Monad law two is broken {lhs} = {rhs}".format(
+            lhs=lhs, rhs=rhs))
 
 
 def monad_law_three(monad, a):
@@ -47,7 +49,8 @@ def monad_law_three(monad, a):
     lhs = mu(F(eta)(a))
     rhs = a
     if lhs != rhs:
-        raise Exception("Monad law 3 is broken {lhs} = {rhs}".format(lhs=lhs, rhs=rhs))
+        raise Exception("Monad law 3 is broken {lhs} = {rhs}".format(
+            lhs=lhs, rhs=rhs))
 
 
 class Monad(object):

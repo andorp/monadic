@@ -53,9 +53,9 @@ def test_decorated():
 
 @monadic_comp(none_monad)
 def comprehension_none():
-    x = [ y for x in div_none(4, 0)
-            for y in div_none(4, x)
-        ]
+    x = [y
+         for x in div_none(4, 0)
+         for y in div_none(4, x)]
     return x
 
 

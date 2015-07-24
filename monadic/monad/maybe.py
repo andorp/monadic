@@ -3,8 +3,8 @@ from monadic.monad_def import monad
 
 class Maybe(object):
     def __eq__(self, other):
-        return (isinstance(other, self.__class__)
-            and self.__dict__ == other.__dict__)
+        return (isinstance(other, self.__class__) and
+                self.__dict__ == other.__dict__)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -66,6 +66,7 @@ def join(mmx):
 
 def unit(x):
     return Just(x)
+
 
 def maybe_monad():
     return monad(maybe_functor, join, unit)
