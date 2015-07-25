@@ -1,8 +1,14 @@
 from monadic.decorator import monadic, monadic_comp
 from monadic.monad_def import monad_law_one, monad_law_two, monad_law_three
 from monadic.monad.maybe import maybe_monad, nothing, just
+from monadic.monad_test import MonadLawTest
 
 from nose.tools import eq_
+
+
+__ALL__ = ['MaybeMonadTest'
+           'test_decorated_maybe',
+           'test_maybe_comprehension']
 
 
 test_data = [
@@ -13,22 +19,10 @@ test_data = [
 ]
 
 
-test_monad = maybe_monad()
-
-
-def test_monad_law_one():
-    for xs in test_data:
-        yield monad_law_one, test_monad, xs
-
-
-def test_monad_law_two():
-    for xs in test_data:
-        yield monad_law_two, test_monad, xs
-
-
-def test_monad_law_three():
-    for xs in test_data:
-        yield monad_law_three, test_monad, xs
+class MaybeMonadTest(MonadLawTest):
+    MONAD = maybe_monad()
+    MONAD_TEST_DATA = test_data
+    FUNCTOR_TEST_DATA = [nothing, just(1)]
 
 
 def div_maybe(x, y):
