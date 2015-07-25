@@ -12,3 +12,8 @@ def get_major_version():
 
 
 PYTHON_VERSION = get_major_version()
+
+
+def invalid_python_version():
+    raise Exception("Invalid python version: {ver}".format(
+        ver=PYTHON_VERSION))

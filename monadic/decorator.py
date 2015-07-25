@@ -9,7 +9,7 @@ from types import CodeType as code, FunctionType as function
 import inspect
 
 from monadic.interop import map_list
-from monadic.python_ver import PYTHON_VERSION
+from monadic.python_ver import PYTHON_VERSION, invalid_python_version
 
 import __future__
 PyCF_MASK = sum(v
@@ -38,7 +38,7 @@ def get_func_code(f):
     elif PYTHON_VERSION is 3:
         return f.__code__
     else:
-        raise Exception('Unknown python version {v}'.format(v=PYTHON_VERSION))
+        value_expressions()
 
 
 def set_func_code(f, code):
@@ -47,7 +47,7 @@ def set_func_code(f, code):
     elif PYTHON_VERSION is 3:
         f.__code__ = code
     else:
-        raise Exception('Unknown python version {v}'.format(v=PYTHON_VERSION))
+        value_expressions()
 
 
 def uncompile(c):
@@ -195,14 +195,11 @@ class MonadicListComp(ast.NodeTransformer):
             g = gs[0]
             iter_call = g.iter
             if l == 1:
-                la = ast.Lambda(args=ast.arguments(args=[g.target],
-                                                   defaults=[]),
-                                body=func_call(name('unit'), args=[node.elt]))
+                la = ast_lambda(g.target,
+                                func_call(name('unit'), args=[node.elt]))
                 return func_call(name('bind'), [iter_call, la])
             if l > 1:
-                la = ast.Lambda(args=ast.arguments(args=[g.target],
-                                                   defaults=[]),
-                                body=create_bind(gs[1:]))
+                la = ast_lambda(g.target, create_bind(gs[1:]))
                 return func_call(name('bind'), [iter_call, la])
             raise Exception('Empty generators for list comprehension')
 
@@ -303,9 +300,26 @@ def get_name(stmt):
         stmt)
 
 
-value_expressions = [ast.BoolOp, ast.BinOp, ast.UnaryOp, ast.Dict,
-                     ast.ListComp, ast.Num, ast.Str, ast.Subscript,
-                     ast.List, ast.Tuple]
+def define_value_expression():
+    exprs = [ast.BoolOp,
+             ast.BinOp,
+             ast.UnaryOp,
+             ast.Dict,
+             ast.ListComp,
+             ast.Num,
+             ast.Str,
+             ast.Subscript,
+             ast.List,
+             ast.Tuple]
+    if PYTHON_VERSION is 2:
+        return exprs
+    elif PYTHON_VERSION is 3:
+        return (exprs + [ast.DictComp, ast.SetComp])
+    else:
+        invalid_python_version()
+
+
+value_expressions = define_value_expression()
 
 
 def is_value_expr(expr):
@@ -411,5 +425,4 @@ def ast_lambda(name, body):
                                              kw_defaults=[]),
                           body=body)
     else:
-        raise Exception('Unknown python version {v}'.format(
-            v=PYTHON_VERSION))
+        invalid_python_version()
