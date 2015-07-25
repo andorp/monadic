@@ -11,6 +11,7 @@ Simple monadic framework for python
  * Python 3.3
  * Python 3.4
  * Python 3.5
+ * Python nighly
 
 ### virtualenvwrapper
 
