@@ -1,5 +1,9 @@
 
 
+def identity(x):
+    return x
+
+
 def compose(f, g):
     def h(x):
         return f(g(x))
