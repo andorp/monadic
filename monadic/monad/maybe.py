@@ -47,12 +47,11 @@ def check_type(m):
 
 def maybe_functor(c):
     def fmap(m):
+        check_type(m)
         if is_just(m):
             return Just(c(m.value))
-        elif is_nothing(m):
-            return m
         else:
-            raise TypeError("Expected maybe type, found {t}".format(t=type(m)))
+            return m
     return fmap
 
 
