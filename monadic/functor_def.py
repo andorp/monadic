@@ -15,3 +15,14 @@ def functor_law_compose(F, f, g, a):
     if lhs != rhs:
         raise Exception("Functor composite law is broken {lhs} = {rhs}".format(
             lhs=lhs, rhs=rhs))
+
+
+# Test functions
+
+
+def add1(x):
+    return (x + 1)
+
+
+def add2(x):
+    return (x + 2)

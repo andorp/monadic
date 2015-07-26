@@ -1,9 +1,10 @@
 from monadic.monad_def import monad
+from monadic.interop import map_list
 
 
 def list_functor(c):
     def fmap(l):
-        return map(c, l)
+        return map_list(c, l)
     return fmap
 
 
