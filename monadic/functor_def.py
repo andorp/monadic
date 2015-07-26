@@ -1,11 +1,11 @@
-from monadic.function import compose
+from monadic.function import compose, identity
 
 
 def functor_law_identity(F, a):
-    lhs = F(id)(a)
+    lhs = F(identity)(a)
     rhs = a
     if lhs != rhs:
-        return Exception("Functor identity law is broken {lhs} = {rhs}".format(
+        raise Exception("Functor identity law is broken {lhs} = {rhs}".format(
             lhs=lhs, rhs=rhs))
 
 
