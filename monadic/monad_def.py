@@ -59,5 +59,5 @@ class Monad(object):
         self.value = value
 
     def __call__(self, k):
-        self.value = bind(self.value, k)
+        self.value = self.bind(self.value, k)
         return self.value
