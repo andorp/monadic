@@ -1,14 +1,9 @@
 from monadic.decorator import monadic, monadic_comp
 from monadic.monad_def import monad_law_one, monad_law_two, monad_law_three
 from monadic.monad.error import error_monad, Left, Right, error_msg
-from monadic.monad_test import MonadLawTest
+
 
 from nose.tools import eq_
-
-
-__ALL__ = ['test_decorated_error',
-           'test_comprehension',
-           '']
 
 
 test_data = [
@@ -18,10 +13,22 @@ test_data = [
 ]
 
 
-class MaybeMonadTest(MonadLawTest):
-    MONAD = error_monad()
-    MONAD_TEST_DATA = test_data
-    FUNCTOR_TEST_DATA = [Left("error"), Right(3)]
+test_monad = error_monad()
+
+
+def test_monad_law_one():
+    for xs in test_data:
+        yield monad_law_one, test_monad, xs
+
+
+def test_monad_law_two():
+    for xs in test_data:
+        yield monad_law_two, test_monad, xs
+
+
+def test_monad_law_three():
+    for xs in test_data:
+        yield monad_law_three, test_monad, xs
 
 
 def div_error(x, y):

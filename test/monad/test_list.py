@@ -1,14 +1,9 @@
 from monadic.decorator import monadic, monadic_comp
 from monadic.monad_def import monad_law_one, monad_law_two, monad_law_three
 from monadic.monad.list import list_monad
-from monadic.monad_test import MonadLawTest
 
 from nose.tools import eq_
 
-
-__ALL__ = ['test_decorated_list',
-           'test_list_comprehension',
-           'ListMonadTest']
 
 test_data = [
     [[[]]],
@@ -17,10 +12,22 @@ test_data = [
 ]
 
 
-class ListMonadTest(MonadLawTest):
-    MONAD = list_monad()
-    MONAD_TEST_DATA = test_data
-    FUNCTOR_TEST_DATA = [[], [1]]
+test_monad = list_monad()
+
+
+def test_monad_law_one():
+    for xs in test_data:
+        yield monad_law_one, test_monad, xs
+
+
+def test_monad_law_two():
+    for xs in test_data:
+        yield monad_law_two, test_monad, xs
+
+
+def test_monad_law_three():
+    for xs in test_data:
+        yield monad_law_three, test_monad, xs
 
 
 @monadic(list_monad)
