@@ -1,8 +1,5 @@
-from monadic.decorator import monadic, monadic_comp
 from monadic.monad_def import monad_law_one, monad_law_two, monad_law_three
 from monadic.monad.list import list_monad
-
-from nose.tools import eq_
 
 
 test_data = [
@@ -28,30 +25,3 @@ def test_monad_law_two():
 def test_monad_law_three():
     for xs in test_data:
         yield monad_law_three, test_monad, xs
-
-
-@monadic(list_monad)
-def decorated_list():
-    x = range(0, 4)
-    y = range(0, x)
-    return y
-
-
-def test_decorated_list():
-    xs = decorated_list()
-    expected = [0, 0, 1, 0, 1, 2]
-    eq_(expected, xs, "List non calculated correctly")
-
-
-@monadic_comp(list_monad)
-def comprehension_list():
-    x = [y
-         for x in range(0, 4)
-         for y in range(0, x)]
-    return x
-
-
-def test_list_comprehension():
-    xs = comprehension_list()
-    expected = [0, 0, 1, 0, 1, 2]
-    eq_(expected, xs, "List non calculated correctly")
