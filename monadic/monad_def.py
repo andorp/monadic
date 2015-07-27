@@ -2,15 +2,15 @@
 
 def monad(functor, times, ident):
     return {
-        't': functor,
-        '*': times,
-        '1': ident
+        'F': functor,
+        '*': times,  # F(F(a)) -> F(a)
+        '1': ident   # a       -> F(a)
     }
 
 
 def kliesli_arrow(monad):
     def fm(m, k):
-        F = monad['t']
+        F = monad['F']
         return monad['*'](F(k)(m))
     return fm
 
@@ -22,7 +22,7 @@ def unit(monad):
 
 
 def monad_law_one(monad, a):
-    F = monad['t']
+    F = monad['F']
     mu = monad['*']
     eta = monad['1']
     lhs = mu(F(mu)(a))
@@ -43,7 +43,7 @@ def monad_law_two(monad, a):
 
 
 def monad_law_three(monad, a):
-    F = monad['t']
+    F = monad['F']
     mu = monad['*']
     eta = monad['1']
     lhs = mu(F(eta)(a))

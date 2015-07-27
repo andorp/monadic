@@ -13,7 +13,7 @@ test_data = [
 
 
 test_monad = maybe_monad()
-test_functor = test_monad['t']
+test_functor = test_monad['F']
 
 
 def test_monad_law_one():
