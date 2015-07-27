@@ -31,7 +31,7 @@ def comonad_law_one(comonad, a):
             lhs=lhs, rhs=rhs))
 
 
-def comonad_law_two(monad, a):
+def comonad_law_two(comonad, a):
     delta = comonad['*']
     eps = comonad['1']
     lhs = eps(delta(a))
@@ -41,7 +41,7 @@ def comonad_law_two(monad, a):
             lhs=lhs, rhs=rhs))
 
 
-def monad_law_three(monad, a):
+def monad_law_three(comonad, a):
     F = comonad['F']
     delta = comonad['*']
     eps = comonad['1']
