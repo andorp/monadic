@@ -8,8 +8,8 @@ def monad(functor, times, ident):
     }
 
 
-def kliesli_arrow(monad):
-    def fm(m, k):
+def kleisli_arrow(monad):
+    def fm(m, k):  # m: F(a), k: a -> F(b)
         F = monad['F']
         return monad['*'](F(k)(m))
     return fm
@@ -24,7 +24,6 @@ def unit(monad):
 def monad_law_one(monad, a):
     F = monad['F']
     mu = monad['*']
-    eta = monad['1']
     lhs = mu(F(mu)(a))
     rhs = mu(mu(a))
     if lhs != rhs:
@@ -55,7 +54,7 @@ def monad_law_three(monad, a):
 
 class Monad(object):
     def __init__(self, monad_t, value):
-        self.bind = kliesli_arrow(monad_t)
+        self.bind = kleisli_arrow(monad_t)
         self.value = value
 
     def __call__(self, k):
