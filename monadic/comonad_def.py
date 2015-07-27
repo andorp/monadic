@@ -45,7 +45,7 @@ def monad_law_three(monad, a):
     F = comonad['F']
     delta = comonad['*']
     eps = comonad['1']
-    lhs = G(eps)(delta(a))
+    lhs = F(eps)(delta(a))
     rhs = a
     if lhs != rhs:
         raise Exception("Comonad law 3 is broken {lhs} = {rhs}".format(
